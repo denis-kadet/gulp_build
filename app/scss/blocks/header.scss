@@ -1,0 +1,79 @@
+h1 {
+    color: red;
+}
+
+.sprite {
+    display: inline-block;
+    width: 100px;
+    height: 100px;
+    background: url(./images/icons/sprite.svg) center center no-repeat transparent;
+    background-size: 100% 100%;
+
+}
+
+main {
+    visibility: collapse;
+}
+
+section {
+    background-color: #fff;
+}
+
+nav {
+    background-color: #fff;
+}
+
+header {
+    grid-row: auto;
+}
+
+nav {
+    background-color: aqua;
+}
+
+
+p {
+    display: flex;
+    color: tan;
+}
+
+.example {
+    display: grid;
+    transition: all .5s;
+    user-select: none;
+    background: linear-gradient(to bottom, white, black);
+}
+::placeholder {
+    color: gray;
+  }
+
+  .image {
+    background-image: url(image@1x.png);
+  }
+  @media (min-resolution: 2dppx) {
+    .image {
+      background-image: url(image@2x.png);
+    }
+  }
+  @media (min-resolution: 2dppx) {
+    .image {
+      background-attachment: fixed;
+    }
+  } 
+.autoplacement-example {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto;
+    grid-gap: 20px;
+  }
+
+  @media (min-resolution: 2dppx) {
+    .image {
+      background-image: url(image@2x.png);
+    }
+  }
+  @media (min-resolution: 2dppx) {
+    .image {
+      background-attachment: fixed;
+    }
+  } 
