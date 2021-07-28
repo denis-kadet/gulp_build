@@ -1,6 +1,12 @@
-const { src, dest, watch, parallel, series } = require("gulp");
+const {
+    src,
+    dest,
+    watch,
+    parallel,
+    series
+} = require("gulp");
 const rm = require("gulp-rm");
-const sass = require("gulp-sass");
+const sass = require('gulp-sass')(require('sass'));
 const sassGlob = require("gulp-sass-glob");
 const concat = require("gulp-concat");
 const browserSync = require("browser-sync").create();
@@ -14,7 +20,7 @@ const gcmq = require('gulp-group-css-media-queries');
 const px2rem = require('gulp-smile-px2rem');
 const cleanCSS = require('gulp-clean-css');
 const svgo = require('gulp-svgo');
-const svgSprite = require('gulp-svg-sprite'); 
+const svgSprite = require('gulp-svg-sprite');
 const gulpif = require('gulp-if');
 
 const env = process.env.NODE_ENV;
@@ -22,7 +28,9 @@ const env = process.env.NODE_ENV;
 sass.compiler = require('node-sass');
 
 function clean() {
-  return src("dist/**/*", { read: false }).pipe(rm());
+    return src("dist/**/*", {
+        read: false
+    }).pipe(rm());
 }
 
 const files = [
@@ -31,94 +39,94 @@ const files = [
 ]
 
 function styles() {
-  return src(files)
-    .pipe(gulpif(env === "dev", sourcemaps.init()))
-    .pipe(sassGlob())
-    .pipe(sass(/*{outputStyle: 'compressed'}*/).on("error", sass.logError))
-    .pipe(concat("style.min.css"))
-    .pipe(px2rem())
-    .pipe(postcss([autoprefixer({ grid: "autoplace"})])) //options: https://www.npmjs.com/package/autoprefixer#prefixes
-    .pipe(gulpif(env === "prod",gcmq()))
-    .pipe(gulpif(env === "prod",cleanCSS()))
-    .pipe(gulpif(env === "dev", sourcemaps.write()))
-    .pipe(dest("./app/css"));
+    return src(files)
+        .pipe(gulpif(env === "dev", sourcemaps.init()))
+        .pipe(sassGlob())
+        .pipe(sass( /*{outputStyle: 'compressed'}*/ ).on("error", sass.logError))
+        .pipe(concat("style.min.css"))
+        .pipe(px2rem())
+        .pipe(postcss([autoprefixer({
+            grid: "autoplace"
+        })])) //options: https://www.npmjs.com/package/autoprefixer#prefixes
+        .pipe(gulpif(env === "prod", gcmq()))
+        .pipe(gulpif(env === "prod", cleanCSS()))
+        .pipe(gulpif(env === "dev", sourcemaps.write()))
+        .pipe(dest("./app/css"));
 }
 
 function copycss() {
-  return src([
-    "./app/css/style.min.css"
-  ]).pipe(dest("./dist"));
+    return src([
+        "./app/css/style.min.css"
+    ]).pipe(dest("./dist"));
 }
 
 function copyhtml() {
     return src([
-      "./app/index.html"
+        "./app/index.html"
     ]).pipe(dest("./dist"));
-  }
+}
 
-  function copyfonts() {
+function copyfonts() {
     return src([
-      "./app/fonts/**/*"
+        "./app/fonts/**/*"
     ]).pipe(dest("./dist/fonts"));
-  }
+}
 
 function copyimg() {
-  return src(["./app/images/**/*", "!app/images/icons"]).pipe(dest("./dist/images"))
+    return src(["./app/images/**/*", "!app/images/icons"]).pipe(dest("./dist/images"))
 }
 
 
-  const libs = [
-  './app/js/main.js',
-  // './node_modules/jquery/dist/jquery.js'
+const libs = [
+    './app/js/main.js',
+    // './node_modules/jquery/dist/jquery.js'
 ]
 
 function script() {
     return src(libs)
-    .pipe(gulpif(env === "dev", sourcemaps.init()))
-    .pipe(concat('main.min.js'))
-    .pipe( gulpif( env === "prod", babel({
-      presets: ['@babel/env']
-  })))
-    .pipe(gulpif( env === "prod", uglify()))
-    .pipe(gulpif(env === "dev", sourcemaps.write()))
-    .pipe(dest('./dist'))
+        .pipe(gulpif(env === "dev", sourcemaps.init()))
+        .pipe(concat('main.min.js'))
+        .pipe(gulpif(env === "prod", babel({
+            presets: ['@babel/env']
+        })))
+        .pipe(gulpif(env === "prod", uglify()))
+        .pipe(gulpif(env === "dev", sourcemaps.write()))
+        .pipe(dest('./dist'))
 }
 
 function icon() {
-  return src('./app/images/icons/*.svg')
-  .pipe(svgo ({
-    plugins: [
-        {
-          removeAttrs: {
-            attrs: '(fill|stroke|style|width|height|data.*)'
-        }
-      }
-    ]
-  }))
-  .pipe(svgSprite({
-    mode: {
-      symbol: {
-        sprite: '../sprite.svg'
-      }
-    }
-  }))
-  .pipe(dest('./dist/images/icons'));
+    return src('./app/images/icons/*.svg')
+        .pipe(svgo({
+            plugins: [{
+                removeAttrs: {
+                    attrs: '(fill|stroke|style|width|height|data.*)'
+                }
+            }]
+        }))
+        .pipe(svgSprite({
+            mode: {
+                symbol: {
+                    sprite: '../sprite.svg'
+                }
+            }
+        }))
+        .pipe(dest('./dist/images/icons'));
 }
 
 function stream() {
-  watch(["./app/**/*.scss"], series(styles, copycss, copyhtml)).on("change", browserSync.reload);;
-  watch(["./app/*.html"], copyhtml).on("change", browserSync.reload);
-  watch(['./app/js/*.js'], script).on("change", browserSync.reload);
-  watch(['./app/images/icons/*.svg'], icon).on("change", browserSync.reload);;
+    watch(["./app/**/*.scss"], series(styles, copycss, copyhtml)).on("change", browserSync.reload);;
+    watch(["./app/*.html"], copyhtml).on("change", browserSync.reload);
+    watch(['./app/js/*.js'], script).on("change", browserSync.reload);
+    watch(['./app/images/icons/*.svg'], icon).on("change", browserSync.reload);;
 }
 
 function server() {
-  browserSync.init({
-    server: {
-      baseDir: "./dist",
-    },
-    open: false,
-  });
+    browserSync.init({
+        server: {
+            baseDir: "./dist",
+        },
+        open: false,
+    });
 }
 
 
